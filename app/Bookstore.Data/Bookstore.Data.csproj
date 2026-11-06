@@ -9,6 +9,7 @@
         <PackageReference Include="AWSSDK.S3" Version="4.0.104.10" />
         <PackageReference Include="AWSSDK.SecretsManager" Version="4.0.100.24" />
         <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="15.1.0" />
+        <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.8" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.14" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.14">
             <PrivateAssets>all</PrivateAssets>
@@ -22,6 +23,8 @@
         <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.14" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.14" />
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.2" />
+        <PackageReference Include="NuGet.Packaging" Version="6.13.1" />
+        <PackageReference Include="NuGet.Protocol" Version="6.13.1" />
     </ItemGroup>
 
     <ItemGroup>
