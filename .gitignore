@@ -358,3 +358,11 @@ ASALocalRun/
 /app/Bookstore.Admin/wwwroot/images
 /app/Bookstore.Customer/wwwroot/images
 /app/Bookstore.Web/wwwroot/images
+checklist-*.md
+checklist-planner-*.md
+checklist-convert-*.md
+.artifacts/
+.migration-artifacts/
+progress.json
+migration-summary.md
+nextsteps.md
