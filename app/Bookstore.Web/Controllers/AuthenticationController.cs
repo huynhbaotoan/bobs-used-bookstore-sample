@@ -20,12 +20,12 @@ namespace Bookstore.Web.Controllers
         }
 
         [AllowAnonymous]
-        public IActionResult Login(string redirectUri = null)
+        public IActionResult Login(string? redirectUri = null)
         {
             return Challenge(new AuthenticationProperties
             {
                 // Referer is absent on direct navigation; fall back to the site root rather than NRE.
-                RedirectUri = redirectUri ?? Request.GetTypedHeaders().Referer?.ToString() ?? Url.Action("Index", "Home")
+                RedirectUri = redirectUri ?? Request.GetTypedHeaders().Referer?.ToString() ?? Url.Action("Index", "Home") ?? "/"
             });
         }
 

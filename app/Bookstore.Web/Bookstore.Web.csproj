@@ -2,6 +2,12 @@
 
     <PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<!-- Audit only direct package references; transitive NuGet tooling packages
+		     (NuGet.Packaging/Protocol from Web.CodeGeneration.Design) trigger NU1901
+		     for a low-severity CVE outside our control. -->
+		<NuGetAuditMode>direct</NuGetAuditMode>
     </PropertyGroup>
 
     <ItemGroup>
@@ -15,7 +21,10 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.3" />
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.3">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 
     <ItemGroup>

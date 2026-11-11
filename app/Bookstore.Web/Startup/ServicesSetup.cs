@@ -27,7 +27,7 @@ namespace Bookstore.Web.Startup
             builder.Services.Configure<ForwardedHeadersOptions>(o =>
             {
                 o.ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost | ForwardedHeaders.XForwardedFor;
-                o.KnownNetworks.Clear();
+                o.KnownIPNetworks.Clear();
                 o.KnownProxies.Clear();
             });
 

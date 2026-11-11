@@ -42,7 +42,7 @@ namespace Bookstore.Web.Controllers
 
             await addressService.CreateAddressAsync(dto);
 
-            return Redirect(model.ReturnUrl);
+            return Redirect(model.ReturnUrl ?? "/Address");
         }
 
         public async Task<IActionResult> Update(int id, string returnUrl)
@@ -61,7 +61,7 @@ namespace Bookstore.Web.Controllers
 
             await addressService.UpdateAddressAsync(dto);
 
-            return Redirect(model.ReturnUrl);
+            return Redirect(model.ReturnUrl ?? "/Address");
         }
 
         [HttpPost]

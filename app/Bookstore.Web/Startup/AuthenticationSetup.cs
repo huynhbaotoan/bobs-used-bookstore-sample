@@ -13,7 +13,7 @@ namespace Bookstore.Web.Startup
 {
     public static class CognitoClientIdHelper
     {
-        public static string GetClientId(WebApplicationBuilder builder)
+        public static string? GetClientId(WebApplicationBuilder builder)
         {
             switch (builder.Configuration["AWS:Service"])
             {
@@ -31,9 +31,9 @@ namespace Bookstore.Web.Startup
 
     public static class AuthenticationSetup
     {
-        private static string _cognitoDomain;
-        private static string _cognitoClientId;
-        private static string _cognitoAppSignOutUrl;
+        private static string? _cognitoDomain;
+        private static string? _cognitoClientId;
+        private static string? _cognitoAppSignOutUrl;
 
         public static WebApplicationBuilder ConfigureAuthentication(this WebApplicationBuilder builder)
         {
@@ -125,14 +125,14 @@ namespace Bookstore.Web.Startup
             // Cognito user-pool attributes such as given_name/family_name are optional, and
             // Identity.Name depends on the cognito:username claim being present. Guard all of
             // them so a user missing an optional attribute cannot 500 the login callback.
-            var sub = principal.GetSub();
-            var userName = principal.Identity?.Name
-                ?? principal.FindFirst("cognito:username")?.Value
+            var sub = principal?.GetSub();
+            var userName = principal?.Identity?.Name
+                ?? principal?.FindFirst("cognito:username")?.Value
                 ?? sub;
-            var givenName = principal.FindFirst("given_name")?.Value ?? string.Empty;
-            var familyName = principal.FindFirst("family_name")?.Value ?? string.Empty;
+            var givenName = principal?.FindFirst("given_name")?.Value ?? string.Empty;
+            var familyName = principal?.FindFirst("family_name")?.Value ?? string.Empty;
 
-            var dto = new CreateOrUpdateCustomerDto(sub, userName, givenName, familyName);
+            var dto = new CreateOrUpdateCustomerDto(sub ?? string.Empty, userName ?? string.Empty, givenName, familyName);
 
             await customerService.CreateOrUpdateCustomerAsync(dto);
         }

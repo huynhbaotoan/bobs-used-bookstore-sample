@@ -42,9 +42,9 @@ namespace Bookstore.Web.Controllers
 
             var dto = new CreateOfferDto(
                 User.GetSub(), 
-                resaleViewModel.BookName, 
-                resaleViewModel.Author, 
-                resaleViewModel.ISBN, 
+                resaleViewModel.BookName!, 
+                resaleViewModel.Author!, 
+                resaleViewModel.ISBN!, 
                 resaleViewModel.SelectedBookTypeId, 
                 resaleViewModel.SelectedConditionId, 
                 resaleViewModel.SelectedGenreId, 
