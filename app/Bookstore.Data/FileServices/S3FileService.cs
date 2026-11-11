@@ -3,6 +3,7 @@ using Amazon.S3.Model;
 using Amazon.S3.Transfer;
 using Bookstore.Domain;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -38,8 +39,18 @@ namespace Bookstore.Data.FileServices
             if (contents == null) return null;
 
             var bucketName = configuration["AWS:BucketName"];
+
+            if (string.IsNullOrWhiteSpace(bucketName))
+            {
+                throw new InvalidOperationException("The 'AWS:BucketName' configuration value is missing or empty.");
+            }
+
             var uniqueFilename = $"{Path.GetFileNameWithoutExtension(Path.GetRandomFileName())}{Path.GetExtension(filename)}";
             var cloudFrontDomain = configuration["AWS:CloudFrontDomain"];
+
+            // The SDK uploads from the stream's current position; rewind so the whole
+            // file is sent even when the stream has already been read by another service.
+            if (contents.CanSeek) contents.Position = 0;
 
             var request = new TransferUtilityUploadRequest
             {

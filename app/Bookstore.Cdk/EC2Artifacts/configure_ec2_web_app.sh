@@ -37,6 +37,16 @@ fi
 # Install latest updates
 yum update -y
 
+# Install the ASP.NET Core 10 runtime.
+# The app is published framework-dependent for net10.0, so the runtime must be installed
+# explicitly - do not rely on the .NET version bundled with the AMI.
+sudo yum install -y tar gzip libicu
+curl -sSL https://dot.net/v1/dotnet-install.sh -o /tmp/dotnet-install.sh
+chmod +x /tmp/dotnet-install.sh
+sudo /tmp/dotnet-install.sh --channel 10.0 --runtime aspnetcore --install-dir /usr/share/dotnet
+sudo ln -sf /usr/share/dotnet/dotnet /usr/bin/dotnet
+/usr/bin/dotnet --list-runtimes
+
 # Install Apache
 sudo yum install -y httpd
 sudo systemctl start httpd

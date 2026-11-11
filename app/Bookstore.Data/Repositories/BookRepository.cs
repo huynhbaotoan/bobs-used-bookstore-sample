@@ -68,7 +68,8 @@ namespace Bookstore.Data.Repositories
                 .Include(x => x.Genre)
                 .Include(x => x.Publisher)
                 .Include(x => x.BookType)
-                .Include(x => x.Condition);
+                .Include(x => x.Condition)
+                .OrderBy(x => x.Id);
 
             var result = new PaginatedList<Book>(query, pageIndex, pageSize);
 
@@ -113,6 +114,8 @@ namespace Bookstore.Data.Repositories
         async Task IBookRepository.UpdateAsync(Book book)
         {
             var existing = await dbContext.Book.FindAsync(book.Id);
+
+            if (existing == null) return;
 
             dbContext.Entry(existing).CurrentValues.SetValues(book);
 

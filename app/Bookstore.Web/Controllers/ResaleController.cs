@@ -35,7 +35,10 @@ namespace Bookstore.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(ResaleCreateViewModel resaleViewModel)
         {
-            if (!ModelState.IsValid) return View();
+            // The Create view binds Model.Publishers/Conditions/BookTypes/Genres, so the
+            // reference data select lists must be repopulated before redisplaying the form -
+            // returning a bare View() left the model null and threw on render.
+            if (!ModelState.IsValid) return await InvalidCreateView(resaleViewModel);
 
             var dto = new CreateOfferDto(
                 User.GetSub(), 
@@ -51,6 +54,22 @@ namespace Bookstore.Web.Controllers
             await offerService.CreateOfferAsync(dto);
 
             return RedirectToAction(nameof(Index));
+        }
+
+        // Re-hydrates the reference-data select lists and redisplays the Create form, mirroring
+        // the pattern used by Areas/Admin InventoryController.InvalidCreateUpdateView.
+        private async Task<IActionResult> InvalidCreateView(ResaleCreateViewModel model)
+        {
+            var referenceDataDtos = await referenceDataService.GetAllReferenceDataAsync();
+
+            var referenceData = new ResaleCreateViewModel(referenceDataDtos);
+
+            model.BookTypes = referenceData.BookTypes;
+            model.Publishers = referenceData.Publishers;
+            model.Genres = referenceData.Genres;
+            model.Conditions = referenceData.Conditions;
+
+            return View(model);
         }
     }
 }

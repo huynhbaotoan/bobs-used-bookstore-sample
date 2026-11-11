@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
+using System.Threading.Tasks;
 
 namespace Bookstore.Web.Controllers
 {
@@ -21,17 +22,21 @@ namespace Bookstore.Web.Controllers
         [AllowAnonymous]
         public IActionResult Login(string redirectUri = null)
         {
-            return Challenge(new AuthenticationProperties { RedirectUri = redirectUri ?? Request.GetTypedHeaders().Referer.ToString() });
+            return Challenge(new AuthenticationProperties
+            {
+                // Referer is absent on direct navigation; fall back to the site root rather than NRE.
+                RedirectUri = redirectUri ?? Request.GetTypedHeaders().Referer?.ToString() ?? Url.Action("Index", "Home")
+            });
         }
 
-        public IActionResult LogOut()
+        public async Task<IActionResult> LogOut()
         {
-            return webHostEnvironment.IsDevelopment() ? LocalSignOut() : CognitoSignOut();
+            return webHostEnvironment.IsDevelopment() ? await LocalSignOutAsync() : CognitoSignOut();
         }
 
-        private IActionResult LocalSignOut()
+        private async Task<IActionResult> LocalSignOutAsync()
         {
-            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
             return RedirectToAction("Index", "Home");
         }

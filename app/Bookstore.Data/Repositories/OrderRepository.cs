@@ -42,12 +42,27 @@ namespace Bookstore.Data.Repositories
 
         async Task<IEnumerable<Book>> IOrderRepository.ListBestSellingBooksAsync(int count)
         {
-            return await dbContext.OrderItem
+            // EF Core 7+ cannot translate a non-aggregate projection over a group
+            // (the original `Select(x => x.First().Book)`), so the grouping is reduced to
+            // aggregates server-side and the books are then loaded by their ids.
+            var bestSelling = await dbContext.OrderItem
                 .GroupBy(x => x.BookId)
-                .OrderByDescending(x => x.Count())
-                .Select(x => x.First().Book)
+                .Select(x => new { BookId = x.Key, SoldCount = x.Count() })
+                .OrderByDescending(x => x.SoldCount)
                 .Take(count)
                 .ToListAsync();
+
+            var bookIds = bestSelling.Select(x => x.BookId).ToList();
+
+            var books = await dbContext.Book
+                .Where(x => bookIds.Contains(x.Id))
+                .ToListAsync();
+
+            // Preserve the "best selling first" ordering produced by the grouped query.
+            return bookIds
+                .Select(id => books.SingleOrDefault(b => b.Id == id))
+                .Where(b => b != null)
+                .ToList();
         }
 
         async Task<OrderStatistics> IOrderRepository.GetStatisticsAsync()
@@ -87,7 +102,8 @@ namespace Bookstore.Data.Repositories
             query = query
                 .Include(x => x.Customer)
                 .Include(x => x.OrderItems)
-                .ThenInclude(x => x.Book);
+                .ThenInclude(x => x.Book)
+                .OrderBy(x => x.Id);
 
             var result = new PaginatedList<Order>(query, pageIndex, pageSize);
 

@@ -41,12 +41,22 @@ namespace Bookstore.Data.ImageValidationServices
 
             image.CopyTo(memoryStream);
 
+            // The AWS SDK reads the stream from its current position. Without rewinding,
+            // zero bytes are sent and every image is reported as safe.
+            memoryStream.Position = 0;
+
             var result = await rekognitionClient.DetectModerationLabelsAsync(new DetectModerationLabelsRequest()
             {
                 Image = new Image { Bytes = memoryStream }
             });
 
-            return !result.ModerationLabels.Any(x => BannedCategories.Contains(x.Name, StringComparer.OrdinalIgnoreCase));
+            // AWS SDK v4 no longer auto-initializes empty response collections, so
+            // ModerationLabels can be null when nothing was detected.
+            var moderationLabels = result.ModerationLabels;
+
+            if (moderationLabels == null) return true;
+
+            return !moderationLabels.Any(x => BannedCategories.Contains(x.Name, StringComparer.OrdinalIgnoreCase));
         }
     }
 }

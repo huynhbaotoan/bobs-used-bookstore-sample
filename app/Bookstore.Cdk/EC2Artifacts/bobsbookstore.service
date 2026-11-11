@@ -11,6 +11,7 @@ KillSignal=SIGINT
 SyslogIdentifier=bobsbookstore
 User=ec2-user
 Environment=ASPNETCORE_ENVIRONMENT=Production 
+Environment=DOTNET_ROOT=/usr/share/dotnet
 
 [Install]
 WantedBy=multi-user.target
