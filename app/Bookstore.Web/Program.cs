@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 
 using Bookstore.Web.Startup;
 
@@ -10,7 +11,7 @@ builder.ConfigureServices();
 
 builder.ConfigureAuthentication();
 
-builder.ConfigureDependencyInjection();
+builder.Services.AddApplicationServices(builder.Environment);
 
 var app = builder.Build();
 
