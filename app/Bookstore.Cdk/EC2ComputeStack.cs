@@ -147,7 +147,7 @@ public class EC2ComputeStack : Stack
 
         this.WebAppAsset = new Asset(this, "WebAppAsset", new AssetProps
         {
-            Path = "app/Bookstore.Web/bin/Release/net6.0/publish"
+            Path = "app/Bookstore.Web/bin/Release/net10.0/publish"
         });
         this.WebAppAsset.GrantRead(this.Ec2Role);
 
@@ -172,6 +172,9 @@ public class EC2ComputeStack : Stack
 
     internal void CreateEc2Instance(EC2ComputeStackProps props)
     {
+        // Amazon Linux 2 base image. The .NET runtime bundled with this AMI is NOT relied
+        // upon: configure_ec2_web_app.sh installs the ASP.NET Core 10 runtime explicitly,
+        // which is what the framework-dependent net10.0 publish output requires.
         var ami = MachineImage.Lookup(new LookupMachineImageProps
         {
             Name = "amzn2-x86_64-MATEDE_DOTNET-*",

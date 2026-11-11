@@ -40,6 +40,8 @@ namespace Bookstore.Data.Repositories
                 query = query.Where(x => x.DataType == filters.ReferenceDataType.Value);
             }
 
+            query = query.OrderBy(x => x.Id);
+
             var result = new PaginatedList<ReferenceDataItem>(query, pageIndex, pageSize);
 
             await result.PopulateAsync();

@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 using Amazon.CDK;
 using Amazon.CDK.AWS.CloudFront;
+using Amazon.CDK.AWS.CloudFront.Origins;
 using Amazon.CDK.AWS.Cognito;
-using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.S3;
 using Amazon.CDK.AWS.SSM;
 using Amazon.CDK.CustomResources;
@@ -62,53 +62,20 @@ public class CoreStack : Stack
         //=========================================================================================
         // Access to the bucket is only granted to traffic coming from a CloudFront distribution
         //
-        var cloudfrontOAI = new OriginAccessIdentity(this, "cloudfront-OAI");
-
-        var policyProps = new PolicyStatementProps
+        // Place a CloudFront distribution in front of the storage bucket. S3BucketOrigin with
+        // OriginAccessIdentity grants read access automatically and wires up the bucket policy.
+        var distribution = new Distribution(this, "SiteDistribution", new DistributionProps
         {
-            Actions = new[] { "s3:GetObject" },
-            Resources = new[] { this.ImageBucket.ArnForObjects("*") },
-            Principals = new IPrincipal[]
+            DefaultBehavior = new BehaviorOptions
             {
-                new CanonicalUserPrincipal
-                (
-                    cloudfrontOAI.CloudFrontOriginAccessIdentityS3CanonicalUserId
-                )
+                Origin = S3BucketOrigin.WithOriginAccessIdentity(this.ImageBucket),
+                Compress = true,
+                AllowedMethods = AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
+                // Require HTTPS between viewer and CloudFront; CloudFront to
+                // origin (the bucket) will use HTTP but could also be set to require HTTPS
+                ViewerProtocolPolicy = ViewerProtocolPolicy.REDIRECT_TO_HTTPS
             }
-        };
-
-        this.ImageBucket.AddToResourcePolicy(new PolicyStatement(policyProps));
-
-        // Place a CloudFront distribution in front of the storage bucket. S3 will only respond to
-        // requests for objects if that request came from the CloudFront distribution.
-        var distProps = new CloudFrontWebDistributionProps
-        {
-            OriginConfigs = new ISourceConfiguration[]
-            {
-                new SourceConfiguration
-                {
-                    S3OriginSource = new S3OriginConfig
-                    {
-                        S3BucketSource = this.ImageBucket,
-                        OriginAccessIdentity = cloudfrontOAI
-                    },
-                    Behaviors = new IBehavior[]
-                    {
-                        new Behavior
-                        {
-                            IsDefaultBehavior = true,
-                            Compress = true,
-                            AllowedMethods = CloudFrontAllowedMethods.GET_HEAD_OPTIONS
-                        }
-                    }
-                }
-            },
-            // Require HTTPS between viewer and CloudFront; CloudFront to
-            // origin (the bucket) will use HTTP but could also be set to require HTTPS
-            ViewerProtocolPolicy = ViewerProtocolPolicy.REDIRECT_TO_HTTPS
-        };
-
-        var distribution = new CloudFrontWebDistribution(this, "SiteDistribution", distProps);
+        });
 
         _ = new StringParameter(this, "CoverImages-Distribution", new StringParameterProps
         {

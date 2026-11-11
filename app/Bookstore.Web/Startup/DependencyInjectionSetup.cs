@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Bookstore.Domain.Customers;
@@ -22,38 +23,45 @@ namespace Bookstore.Web.Startup
     {
         public static WebApplicationBuilder ConfigureDependencyInjection(this WebApplicationBuilder builder)
         {
-            builder.Services.AddHttpContextAccessor();
-            builder.Services.AddTransient<IBookService, BookService>();
-            builder.Services.AddTransient<IOrderService, OrderService>();
-            builder.Services.AddTransient<IReferenceDataService, ReferenceDataService>();
-            builder.Services.AddTransient<IOfferService, OfferService>();
-            builder.Services.AddTransient<ICustomerService, CustomerService>();
-            builder.Services.AddTransient<IAddressService, AddressService>();
-            builder.Services.AddTransient<IShoppingCartService, ShoppingCartService>();
-            builder.Services.AddTransient<IImageResizeService, ImageResizeService>();
+            builder.Services.AddApplicationServices(builder.Environment);
 
-            builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
-            builder.Services.AddScoped<IAddressRepository, AddressRepository>();
-            builder.Services.AddScoped<IBookRepository, BookRepository>();
-            builder.Services.AddScoped<IOfferRepository, OfferRepository>();
-            builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
-            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-            builder.Services.AddScoped<IReferenceDataRepository, ReferenceDataRepository>();
+            return builder;
+        }
 
-            builder.Services.AddScoped(typeof(IPaginatedList<>), typeof(PaginatedList<>));
+        public static IServiceCollection AddApplicationServices(this IServiceCollection services, IWebHostEnvironment environment)
+        {
+            services.AddHttpContextAccessor();
+            services.AddTransient<IBookService, BookService>();
+            services.AddTransient<IOrderService, OrderService>();
+            services.AddTransient<IReferenceDataService, ReferenceDataService>();
+            services.AddTransient<IOfferService, OfferService>();
+            services.AddTransient<ICustomerService, CustomerService>();
+            services.AddTransient<IAddressService, AddressService>();
+            services.AddTransient<IShoppingCartService, ShoppingCartService>();
+            services.AddTransient<IImageResizeService, ImageResizeService>();
 
-            if (builder.Environment.IsDevelopment())
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<IAddressRepository, AddressRepository>();
+            services.AddScoped<IBookRepository, BookRepository>();
+            services.AddScoped<IOfferRepository, OfferRepository>();
+            services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IReferenceDataRepository, ReferenceDataRepository>();
+
+            services.AddScoped(typeof(IPaginatedList<>), typeof(PaginatedList<>));
+
+            if (environment.IsDevelopment())
             {
-                builder.Services.AddTransient<IFileService, LocalFileService>(_ => new LocalFileService(builder.Environment.WebRootPath));
-                builder.Services.AddTransient<IImageValidationService, LocalImageValidationService>();
+                services.AddTransient<IFileService, LocalFileService>(_ => new LocalFileService(environment.WebRootPath));
+                services.AddTransient<IImageValidationService, LocalImageValidationService>();
             }
             else
             {
-                builder.Services.AddTransient<IFileService, S3FileService>();
-                builder.Services.AddTransient<IImageValidationService, RekognitionImageValidationService>();
+                services.AddTransient<IFileService, S3FileService>();
+                services.AddTransient<IImageValidationService, RekognitionImageValidationService>();
             }
 
-            return builder;
+            return services;
         }
     }
 }

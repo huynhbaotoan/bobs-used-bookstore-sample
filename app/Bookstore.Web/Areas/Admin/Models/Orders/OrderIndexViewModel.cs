@@ -10,7 +10,7 @@ namespace Bookstore.Web.Areas.Admin.Models.Orders
     {
         public List<OrderIndexListItemViewModel> Items { get; set; } = new List<OrderIndexListItemViewModel>();
 
-        public OrderFilters Filters { get; set; }
+        public OrderFilters Filters { get; set; } = new();
 
         public OrderIndexViewModel(IPaginatedList<Order> orderDtos, OrderFilters filters)
         {
@@ -42,7 +42,7 @@ namespace Bookstore.Web.Areas.Admin.Models.Orders
     {
         public int Id { get; set; }
 
-        public string CustomerName { get; set; }
+        public string CustomerName { get; set; } = null!;
 
         public OrderStatus OrderStatus { get; set; }
 

@@ -33,6 +33,10 @@ namespace Bookstore.Data.FileServices
 
             using var filestream = new FileStream(Path.Combine(imageFolder, uniqueFilename), FileMode.OpenOrCreate);
 
+            // Write from the beginning of the source stream: it may already have been
+            // read by the resize/validation services.
+            if (file.CanSeek) file.Position = 0;
+
             await file.CopyToAsync(filestream);
 
             await filestream.FlushAsync();

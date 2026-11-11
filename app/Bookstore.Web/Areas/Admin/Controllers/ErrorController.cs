@@ -24,7 +24,11 @@ namespace Bookstore.Web.Areas.Admin.Controllers
             var error = Problem();
 
             ViewData["StatusCode"] = error.StatusCode;
-            return View("~/Views/Error/Index.cshtml");
+
+            // ~/Views/Error/Index.cshtml does not exist (there is no non-area Error controller),
+            // so the explicit path threw a view-not-found 500. The error page for this action
+            // lives in the Admin area alongside the controller.
+            return View("~/Areas/Admin/Views/Error/Index.cshtml");
         }
     }
 }

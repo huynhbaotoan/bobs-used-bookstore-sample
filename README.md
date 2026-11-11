@@ -20,7 +20,7 @@ In its current state the application illustrates an in-progress "lift and shift"
 
 To run and debug the application locally you need the following:
 * A Windows-based development environment
-* An IDE that supports .NET 6.0: [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) or [JetBrains Rider](https://www.jetbrains.com/rider/)
+* An IDE that supports .NET 10.0: [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) or [JetBrains Rider](https://www.jetbrains.com/rider/)
 
 To deploy the application to AWS you need the following:
 * An AWS IAM User with an attached _AdministratorAccess_ policy

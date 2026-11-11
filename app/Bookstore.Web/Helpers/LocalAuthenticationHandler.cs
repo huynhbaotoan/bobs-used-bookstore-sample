@@ -15,7 +15,7 @@ namespace Bookstore.Web.Helpers
     {
         private const string UserId = "FB6135C7-1464-4A72-B74E-4B63D343DD09";
 
-        public LocalAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : base(options, logger, encoder, clock)
+        public LocalAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder) : base(options, logger, encoder)
         {
         }
 
@@ -40,13 +40,13 @@ namespace Bookstore.Web.Helpers
 
         private async Task SaveCustomerDetailsAsync(HttpContext context, ClaimsIdentity identity)
         {
-            var customerService = context.RequestServices.GetService<ICustomerService>();
+            var customerService = context.RequestServices.GetRequiredService<ICustomerService>();
 
             var dto = new CreateOrUpdateCustomerDto(
-                identity.FindFirst("Sub").Value,
-                identity.Name,
-                identity.FindFirst("given_name").Value,
-                identity.FindFirst("family_name").Value);
+                identity.FindFirst("sub")?.Value ?? UserId,
+                identity.Name ?? "bookstoreuser",
+                identity.FindFirst("given_name")?.Value ?? string.Empty,
+                identity.FindFirst("family_name")?.Value ?? string.Empty);
 
             await customerService.CreateOrUpdateCustomerAsync(dto);
         }

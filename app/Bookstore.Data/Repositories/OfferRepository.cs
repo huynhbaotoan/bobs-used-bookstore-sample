@@ -71,7 +71,7 @@ namespace Bookstore.Data.Repositories
                 query = query.Where(x => x.OfferStatus == filters.OfferStatus);
             }
 
-            query = query.Include(x => x.Customer);
+            query = query.Include(x => x.Customer).OrderBy(x => x.Id);
 
             var result = new PaginatedList<Offer>(query, pageIndex, pageSize);
 

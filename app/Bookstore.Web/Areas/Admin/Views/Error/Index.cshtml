@@ -2,35 +2,31 @@
     ViewData["Title"] = "Error";
 }
 
-<head>
-    <link rel="stylesheet" href="/css/Error/index.css"/>
-</head>
+@* This is a view body rendered inside _Layout, so it must not declare its own <head>.
+   The /css/Error/index.css stylesheet it used to link does not exist in the project, so the
+   bespoke error-template/err-text/errbutton classes never resolved - the equivalent
+   Bootstrap 5 utilities (already loaded by the Admin _Layout) are used instead. *@
 
 <div class="container">
     <div class="row">
         <div class="col-md-12">
-            <div class="error-template err-text">
-                <h1>
+            <div class="text-center my-5">
+                <h1 class="display-1">
                     Oops!
                 </h1>
-                <h2 class="err-text">
+                <h2 class="text-danger">
                     Error Code @ViewData["StatusCode"]
-
                 </h2>
-                <div class="err-text">
-
+                <div class="lead my-3">
                     Sorry, an error has occurred
                 </div>
-                <div class="error-actions">
-                    <a href="javascript:history.go(-1)" class="errbutton" style="color:white;">
-                        <span class=" text-white "></span>
+                <div class="d-flex justify-content-center gap-2">
+                    <a href="javascript:history.go(-1)" class="btn btn-primary">
                         Take Me Back
                     </a>
-                    <a asp-action="Index" asp-controller="Home" class="errbutton" style="color:white;">
-                        <span class=" text-white err-text"></span>
+                    <a asp-area="" asp-action="Index" asp-controller="Home" class="btn btn-primary">
                         Home
                     </a>
-
                 </div>
             </div>
         </div>
